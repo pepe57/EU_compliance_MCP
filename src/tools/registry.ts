@@ -20,7 +20,36 @@ interface ToolDefinition {
   name: string;
   description: string;
   inputSchema: any;
+  annotations?: {
+    title: string;
+    readOnlyHint: boolean;
+    destructiveHint: boolean;
+  };
   handler: (db: DatabaseAdapter, args: any) => Promise<any>;
+}
+
+
+const READ_ONLY_ANNOTATIONS = {
+  readOnlyHint: true,
+  destructiveHint: false,
+} as const;
+
+function toTitle(name: string): string {
+  return name
+    .split('_')
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
+function annotateTools(tools: ToolDefinition[]): ToolDefinition[] {
+  return tools.map((tool) => ({
+    ...tool,
+    annotations: tool.annotations ?? {
+      title: toTitle(tool.name),
+      readOnlyHint: READ_ONLY_ANNOTATIONS.readOnlyHint,
+      destructiveHint: READ_ONLY_ANNOTATIONS.destructiveHint,
+    },
+  }));
 }
 
 /**
@@ -109,13 +138,17 @@ export const TOOLS: ToolDefinition[] = [
   },
   {
     name: 'list_regulations',
-    description: 'List available regulations and their structure. Without parameters, lists all regulations. With a regulation specified, shows chapters and articles.',
+    description: 'List available regulations, optionally filtered by category. Without parameters, lists all regulations grouped by category. With a regulation specified, shows chapters and articles.',
     inputSchema: {
       type: 'object',
       properties: {
         regulation: {
           type: 'string',
           description: 'Optional: specific regulation to get detailed structure for',
+        },
+        category: {
+          type: 'string',
+          description: 'Optional: filter by category (e.g., "cybersecurity", "financial_services", "data_protection", "ai_and_technology", "product_safety", "sustainability", "healthcare", "critical_infrastructure", "digital_services", "automotive")',
         },
       },
     },
@@ -294,13 +327,14 @@ export function buildTools(context: AboutContext): ToolDefinition[] {
  * Use this for both stdio and HTTP servers to ensure parity.
  */
 export function registerTools(server: Server, db: DatabaseAdapter, context?: AboutContext): void {
-  const allTools = context ? buildTools(context) : TOOLS;
+  const allTools = annotateTools(context ? buildTools(context) : TOOLS);
   // List available tools
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
     tools: allTools.map(tool => ({
       name: tool.name,
       description: tool.description,
       inputSchema: tool.inputSchema,
+      annotations: tool.annotations,
     })),
   }));
 

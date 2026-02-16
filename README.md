@@ -188,8 +188,24 @@ EUR-Lex HTML → Parse → SQLite → FTS5 snippet() → MCP response
 - **[Security Policy](SECURITY.md)** - Vulnerability reporting and security best practices
 - **[Coverage Gaps](docs/COVERAGE_GAPS.md)** - Known missing content from EUR-Lex
 - **[GitHub Actions Setup](docs/GITHUB_ACTIONS_SETUP.md)** - CI/CD workflow configuration
+- **[Privacy Policy](PRIVACY.md)** - Data handling and retention notes
 
 ---
+
+## Directory Review Notes
+
+### Testing Account and Sample Data
+
+This server is read-only and does not require a login account for functional review.
+For directory review, use the bundled dataset and these sample prompts:
+- *"What does NIS2 Article 21 require?"*
+- *"Compare DORA and NIS2 incident reporting obligations."*
+- *"Map ISO 27001 controls to DORA requirements."*
+
+### Remote Authentication (OAuth 2.0)
+
+The default server runtime is read-only and can be deployed without authentication.
+If you deploy a remote authenticated endpoint, use OAuth 2.0 over TLS with certificates from recognized authorities.
 
 ## ⚠️ Important Disclaimers
 

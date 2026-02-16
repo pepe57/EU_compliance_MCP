@@ -71,6 +71,10 @@
     {
       "name": "get_evidence_requirements",
       "description": "Get compliance evidence and audit artifacts for regulation requirements"
+    },
+    {
+      "name": "about",
+      "description": "Server metadata, coverage, and data provenance"
     }
   ],
   "compatibility": {
