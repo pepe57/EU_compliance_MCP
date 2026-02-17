@@ -45,22 +45,6 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Get MCP Publisher Private Key from Key Vault
-        id: mcp-key
-        run: |
-          PRIVATE_KEY=$(az keyvault secret show \
-            --vault-name kv-ansvar-dev \
-            --name mcp-publisher-private-key \
-            --query value -o tsv)
-          echo "::add-mask::$PRIVATE_KEY"
-          echo "PRIVATE_KEY=$PRIVATE_KEY" >> $GITHUB_OUTPUT
-          echo "✅ Retrieved MCP publisher key from Key Vault"
-
       - name: Install MCP Publisher
         run: |
           curl -L -o mcp-publisher.tar.gz \
@@ -72,9 +56,9 @@ jobs:
 
       - name: Authenticate with MCP Registry
         env:
-          PRIVATE_KEY: ${{ steps.mcp-key.outputs.PRIVATE_KEY }}
+          PRIVATE_KEY: ${{ secrets.MCP_PUBLISHER_PRIVATE_KEY }}
         run: |
-          mcp-publisher login dns -domain ansvar.eu -private-key "$PRIVATE_KEY"
+          mcp-publisher login dns --domain ansvar.eu --private-key "$PRIVATE_KEY"
           echo "✅ Authenticated with MCP registry"
 
       - name: Publish to MCP Registry
