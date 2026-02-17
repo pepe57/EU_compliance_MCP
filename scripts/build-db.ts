@@ -152,6 +152,12 @@ CREATE TRIGGER IF NOT EXISTS recitals_au AFTER UPDATE ON recitals BEGIN
   VALUES (new.id, new.regulation, new.recital_number, new.text);
 END;
 
+-- Database metadata (self-describing)
+CREATE TABLE IF NOT EXISTS db_metadata (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL
+);
+
 -- Evidence requirements table
 CREATE TABLE IF NOT EXISTS evidence_requirements (
   id INTEGER PRIMARY KEY,
@@ -413,6 +419,30 @@ function buildDatabase() {
     console.log('No seed directory found. Database created with empty tables.');
     console.log(`Create seed files in: ${SEED_DIR}`);
   }
+
+  // Insert db_metadata
+  const now = new Date().toISOString();
+  const insertMeta = db.prepare('INSERT INTO db_metadata (key, value) VALUES (?, ?)');
+  insertMeta.run('schema_version', '2');
+  insertMeta.run('tier', 'full');
+  insertMeta.run('jurisdiction', 'EU');
+  insertMeta.run('built_at', now);
+  insertMeta.run('builder', 'build-db.ts');
+
+  // Count totals for metadata
+  const totalRegulations = (db.prepare('SELECT COUNT(*) as c FROM regulations').get() as any).c;
+  const totalArticles = (db.prepare('SELECT COUNT(*) as c FROM articles').get() as any).c;
+  const totalRecitals = (db.prepare('SELECT COUNT(*) as c FROM recitals').get() as any).c;
+  const totalDefinitions = (db.prepare('SELECT COUNT(*) as c FROM definitions').get() as any).c;
+  insertMeta.run('regulations_count', String(totalRegulations));
+  insertMeta.run('articles_count', String(totalArticles));
+  insertMeta.run('recitals_count', String(totalRecitals));
+  insertMeta.run('definitions_count', String(totalDefinitions));
+
+  console.log(`\ndb_metadata populated: schema_version=2, tier=full, jurisdiction=EU`);
+
+  // Set journal mode to DELETE (required for Vercel serverless — WAL creates sidecar files)
+  db.pragma('journal_mode = DELETE');
 
   db.close();
   console.log(`\nDatabase created at: ${DB_PATH}`);

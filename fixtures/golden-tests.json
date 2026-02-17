@@ -1,0 +1,142 @@
+[
+  {
+    "id": "gdpr-metadata",
+    "description": "GDPR regulation metadata is correct",
+    "tool": "list_regulations",
+    "input": { "regulation": "GDPR" },
+    "assertions": [
+      { "path": "regulations.0.id", "equals": "GDPR" },
+      { "path": "regulations.0.celex_id", "equals": "32016R0679" },
+      { "path": "regulations.0.effective_date", "equals": "2018-05-25" }
+    ]
+  },
+  {
+    "id": "gdpr-art17-right-to-erasure",
+    "description": "GDPR Article 17 contains right to erasure text",
+    "tool": "get_article",
+    "input": { "regulation": "GDPR", "article": "17" },
+    "assertions": [
+      { "path": "article_number", "equals": "17" },
+      { "path": "text", "contains": "right to obtain from the controller the erasure of personal data" }
+    ]
+  },
+  {
+    "id": "nis2-art21-cybersecurity-measures",
+    "description": "NIS2 Article 21 contains cybersecurity risk-management measures",
+    "tool": "get_article",
+    "input": { "regulation": "NIS2", "article": "21" },
+    "assertions": [
+      { "path": "text", "contains": "appropriate and proportionate technical, operational and organisational measures" }
+    ]
+  },
+  {
+    "id": "dora-art6-ict-risk",
+    "description": "DORA Article 6 describes ICT risk management framework",
+    "tool": "get_article",
+    "input": { "regulation": "DORA", "article": "6" },
+    "assertions": [
+      { "path": "text", "contains": "sound, comprehensive and well-documented ICT risk management framework" }
+    ]
+  },
+  {
+    "id": "ai-act-art6-classification",
+    "description": "AI Act Article 6 defines high-risk AI classification rules",
+    "tool": "get_article",
+    "input": { "regulation": "AI_ACT", "article": "6" },
+    "assertions": [
+      { "path": "text", "contains": "high-risk" }
+    ]
+  },
+  {
+    "id": "cra-art13-manufacturer-obligations",
+    "description": "CRA Article 13 defines manufacturer obligations",
+    "tool": "get_article",
+    "input": { "regulation": "CRA", "article": "13" },
+    "assertions": [
+      { "path": "text", "contains": "essential cybersecurity requirements" }
+    ]
+  },
+  {
+    "id": "gdpr-personal-data-definition",
+    "description": "GDPR defines 'personal data' correctly",
+    "tool": "get_definitions",
+    "input": { "term": "personal data", "regulation": "GDPR" },
+    "assertions": [
+      { "path": "0.term", "equals": "personal data" },
+      { "path": "0.definition", "contains": "any information relating to an identified or identifiable natural person" }
+    ]
+  },
+  {
+    "id": "gdpr-recital-1",
+    "description": "GDPR Recital 1 discusses fundamental rights",
+    "tool": "get_recital",
+    "input": { "regulation": "GDPR", "recital_number": 1 },
+    "assertions": [
+      { "path": "text", "contains": "protection of natural persons in relation to the processing of personal data is a fundamental right" }
+    ]
+  },
+  {
+    "id": "search-incident-reporting",
+    "description": "Search for 'incident reporting' returns relevant results from DORA/NIS2",
+    "tool": "search_regulations",
+    "input": { "query": "incident reporting", "regulations": ["DORA", "NIS2"], "limit": 5 },
+    "assertions": [
+      { "path": "length", "greaterThan": 0 }
+    ]
+  },
+  {
+    "id": "negative-test-nonexistent",
+    "description": "Fetching non-existent regulation article returns null",
+    "tool": "get_article",
+    "input": { "regulation": "NONEXISTENT_REG", "article": "1" },
+    "assertions": [
+      { "path": "_isNull", "equals": true }
+    ]
+  },
+  {
+    "id": "regulation-count",
+    "description": "Total regulation count is 49",
+    "tool": "about",
+    "input": {},
+    "assertions": [
+      { "path": "dataset.counts.regulations", "equals": 49 }
+    ]
+  },
+  {
+    "id": "dora-rts-exists",
+    "description": "DORA RTS ICT Risk exists as a regulation",
+    "tool": "get_article",
+    "input": { "regulation": "DORA_RTS_ICT_RISK", "article": "1" },
+    "assertions": [
+      { "path": "regulation", "equals": "DORA_RTS_ICT_RISK" }
+    ]
+  },
+  {
+    "id": "iso27001-mapping-exists",
+    "description": "ISO 27001 A.5.1 mapping exists",
+    "tool": "map_controls",
+    "input": { "framework": "ISO27001", "control": "A.5.1" },
+    "assertions": [
+      { "path": "length", "greaterThan": 0 },
+      { "path": "0.control_id", "equals": "A.5.1" }
+    ]
+  },
+  {
+    "id": "applicability-financial",
+    "description": "Financial sector applicability returns DORA",
+    "tool": "check_applicability",
+    "input": { "sector": "financial" },
+    "assertions": [
+      { "path": "applicable_regulations.length", "greaterThan": 0 }
+    ]
+  },
+  {
+    "id": "special-chars-search",
+    "description": "Search with special characters does not crash",
+    "tool": "search_regulations",
+    "input": { "query": "§ 17 Absatz (1) Datenschutz-Grundverordnung", "limit": 5 },
+    "assertions": [
+      { "path": "error", "notExists": true }
+    ]
+  }
+]

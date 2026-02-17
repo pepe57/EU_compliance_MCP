@@ -1,0 +1,73 @@
+# Data Source Provenance — EU Regulations MCP Server
+# This file documents all data sources, their authority level, and update mechanisms.
+
+sources:
+  - name: EUR-Lex
+    url: https://eur-lex.europa.eu
+    authority: primary
+    description: >
+      Official online access to EU law. All regulation text (articles, recitals,
+      definitions) is sourced from EUR-Lex consolidated texts with amendments applied.
+    data_types:
+      - articles
+      - recitals
+      - definitions
+    regulations_covered: 47
+    ingestion_method: Puppeteer browser automation (EUR-Lex WAF bypass)
+    ingestion_scripts:
+      - scripts/ingest-eurlex.ts
+      - scripts/ingest-eurlex-browser.ts
+      - scripts/ingest-recitals.ts
+    update_mechanism: Daily GitHub Actions workflow (check-updates.yml)
+    update_frequency: daily
+    last_full_ingestion: "2026-02-16"
+
+  - name: UNECE
+    url: https://unece.org/transport/documents
+    authority: primary
+    description: >
+      United Nations Economic Commission for Europe. Source for vehicle cybersecurity
+      (UN R155) and software update (UN R156) regulations.
+    data_types:
+      - articles (numbered sections)
+    regulations_covered: 2
+    ingestion_method: HTTP fetch with custom UNECE parser
+    ingestion_scripts:
+      - scripts/ingest-unece.ts
+    update_mechanism: manual
+    update_frequency: as-needed
+
+  - name: Secure Controls Framework (SCF)
+    url: https://securecontrolsframework.com
+    authority: secondary
+    description: >
+      Provides the cross-framework control mapping methodology. ISO 27001:2022 and
+      NIST CSF 2.0 control mappings are curated based on SCF relationships.
+    data_types:
+      - control_mappings (ISO27001, NIST_CSF)
+    update_mechanism: manual curation
+    update_frequency: quarterly
+
+derived_data:
+  - name: Applicability Rules
+    description: >
+      Sector applicability rules are manually curated based on regulation scope articles.
+      Each rule cites the basis article for traceability.
+    source_files: data/seed/applicability/*.json
+    authority: curated (not authoritative)
+
+  - name: Evidence Requirements
+    description: >
+      Audit artifact requirements are manually curated based on regulation requirements.
+      These represent best-practice compliance evidence, not legally mandated artifacts.
+    source_files: data/seed/evidence/*.json
+    authority: curated (not authoritative)
+
+notes:
+  - >
+    All regulation text is from official public sources. Only documents published in the
+    Official Journal of the EU are deemed authentic (Article 297 TFEU). This dataset
+    should be verified against official publications for legal purposes.
+  - >
+    Control mappings and applicability rules are curated interpretations, not official
+    regulatory guidance.
