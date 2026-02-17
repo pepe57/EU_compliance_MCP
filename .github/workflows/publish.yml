@@ -37,6 +37,8 @@ jobs:
 
       - run: pnpm install --frozen-lockfile --ignore-scripts
 
+      - name: Rebuild native dependencies
+        run: pnpm rebuild better-sqlite3
 
       - run: pnpm run build
       - run: pnpm run build:db
