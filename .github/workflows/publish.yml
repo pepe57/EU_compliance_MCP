@@ -35,10 +35,7 @@ jobs:
           sed -i 's/"version": "[^"]*"/"version": "${{ steps.version.outputs.VERSION }}"/' server.json
           echo "✅ Updated server.json to version ${{ steps.version.outputs.VERSION }}"
 
-      - run: pnpm install --frozen-lockfile --ignore-scripts
-
-      - name: Rebuild native dependencies
-        run: pnpm rebuild better-sqlite3
+      - run: pnpm install --frozen-lockfile
 
       - run: pnpm run build
       - run: pnpm run build:db

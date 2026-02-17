@@ -22,14 +22,11 @@ jobs:
           version: 10
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --ignore-scripts
+        run: pnpm install --frozen-lockfile
 
       - name: Security audit
         run: pnpm audit --audit-level=high
         continue-on-error: true # Don't block on moderate vulnerabilities
-
-      - name: Rebuild native dependencies
-        run: pnpm rebuild better-sqlite3
 
       - name: Install Puppeteer Chrome
         run: npx puppeteer browsers install chrome
