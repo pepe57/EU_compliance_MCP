@@ -339,3 +339,9 @@ The `GITHUB_TOKEN` is automatic and used for:
 - [x] Full-text search via SQLite FTS5
 - [x] Cross-regulation comparison with synonym expansion (15 concept families)
 - [x] Evidence requirements for all 47 regulations (407 audit artifacts)
+
+## Git Workflow
+
+- **Never commit directly to `main`.** Always create a feature branch and open a Pull Request.
+- Branch protection requires: verified signatures, PR review, and status checks to pass.
+- Use conventional commit prefixes: `feat:`, `fix:`, `chore:`, `docs:`, etc.
