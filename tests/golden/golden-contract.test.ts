@@ -78,43 +78,42 @@ describe('Golden Contract Tests', () => {
     expect(goldenTests.length).toBeGreaterThanOrEqual(10);
   });
 
-  // Generate a test for each golden test case
+  // Generate a test for each golden test case.
+  // Uses the shared `db` connection from beforeAll to avoid WASM SQLite
+  // "database is locked" errors from concurrent file-level locks.
   const testContent = readFileSync(GOLDEN_TESTS_PATH, 'utf-8');
   const tests: GoldenTest[] = JSON.parse(testContent);
 
   for (const test of tests) {
     it(`[${test.id}] ${test.description}`, async () => {
-      const sqliteDb = new Database(DB_PATH, { readonly: true });
-      const testDb = createSqliteAdapter(sqliteDb);
-
       let result: any;
       let isError = false;
 
       try {
         switch (test.tool) {
           case 'get_article':
-            result = await getArticle(testDb, test.input as any);
+            result = await getArticle(db, test.input as any);
             break;
           case 'get_recital':
-            result = await getRecital(testDb, test.input as any);
+            result = await getRecital(db, test.input as any);
             break;
           case 'search_regulations':
-            result = await searchRegulations(testDb, test.input as any);
+            result = await searchRegulations(db, test.input as any);
             break;
           case 'list_regulations':
-            result = await listRegulations(testDb, test.input as any);
+            result = await listRegulations(db, test.input as any);
             break;
           case 'get_definitions':
-            result = await getDefinitions(testDb, test.input as any);
+            result = await getDefinitions(db, test.input as any);
             break;
           case 'map_controls':
-            result = await mapControls(testDb, test.input as any);
+            result = await mapControls(db, test.input as any);
             break;
           case 'check_applicability':
-            result = await checkApplicability(testDb, test.input as any);
+            result = await checkApplicability(db, test.input as any);
             break;
           case 'about':
-            result = await getAbout(testDb, {
+            result = await getAbout(db, {
               version: '1.0.0',
               fingerprint: 'test',
               dbBuilt: '2026-01-01',
@@ -155,8 +154,6 @@ describe('Golden Contract Tests', () => {
           expect(isError, `${test.id}: should not produce an error`).toBe(false);
         }
       }
-
-      await testDb.close();
     });
   }
 });

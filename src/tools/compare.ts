@@ -16,7 +16,6 @@ export interface RegulationComparison {
 export interface CompareResult {
   topic: string;
   regulations: RegulationComparison[];
-  key_differences?: string[];
 }
 
 /**

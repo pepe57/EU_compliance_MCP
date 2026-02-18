@@ -64,10 +64,7 @@ describe('Drift Detection', () => {
       const [regulation, article] = key.split(':');
 
       it(`${regulation} Article ${article} text matches golden hash`, async () => {
-        const sqliteDb = new Database(DB_PATH, { readonly: true });
-        const testDb = createSqliteAdapter(sqliteDb);
-
-        const result = await testDb.query(
+        const result = await db.query(
           'SELECT text FROM articles WHERE regulation = ? AND article_number = ?',
           [regulation, article]
         );
@@ -76,8 +73,6 @@ describe('Drift Detection', () => {
 
         const actualHash = sha256((result.rows[0] as any).text);
         expect(actualHash, `${key} text has drifted from golden hash`).toBe(expectedHash);
-
-        await testDb.close();
       });
     }
   });
@@ -89,10 +84,7 @@ describe('Drift Detection', () => {
       const [regulation, recitalNum] = key.split(':');
 
       it(`${regulation} Recital ${recitalNum} text matches golden hash`, async () => {
-        const sqliteDb = new Database(DB_PATH, { readonly: true });
-        const testDb = createSqliteAdapter(sqliteDb);
-
-        const result = await testDb.query(
+        const result = await db.query(
           'SELECT text FROM recitals WHERE regulation = ? AND recital_number = ?',
           [regulation, Number(recitalNum)]
         );
@@ -101,8 +93,6 @@ describe('Drift Detection', () => {
 
         const actualHash = sha256((result.rows[0] as any).text);
         expect(actualHash, `${key} recital text has drifted from golden hash`).toBe(expectedHash);
-
-        await testDb.close();
       });
     }
   });
@@ -114,10 +104,7 @@ describe('Drift Detection', () => {
       const [regulation, term] = key.split(':');
 
       it(`${regulation} definition "${term}" matches golden hash`, async () => {
-        const sqliteDb = new Database(DB_PATH, { readonly: true });
-        const testDb = createSqliteAdapter(sqliteDb);
-
-        const result = await testDb.query(
+        const result = await db.query(
           'SELECT definition FROM definitions WHERE regulation = ? AND term = ?',
           [regulation, term]
         );
@@ -126,8 +113,6 @@ describe('Drift Detection', () => {
 
         const actualHash = sha256((result.rows[0] as any).definition);
         expect(actualHash, `${key} definition text has drifted from golden hash`).toBe(expectedHash);
-
-        await testDb.close();
       });
     }
   });

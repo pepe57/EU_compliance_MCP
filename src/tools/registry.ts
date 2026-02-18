@@ -98,6 +98,10 @@ export const TOOLS: ToolDefinition[] = [
           type: 'string',
           description: 'Article number (e.g., "17", "23")',
         },
+        include_recitals: {
+          type: 'boolean',
+          description: 'Optional: include related recitals alongside the article text (default: false)',
+        },
       },
       required: ['regulation', 'article'],
     },
@@ -193,11 +197,15 @@ export const TOOLS: ToolDefinition[] = [
         },
         control: {
           type: 'string',
-          description: 'Optional: specific control ID (e.g., "A.5.1" for ISO27001, "PR.AC-1" for NIST CSF)',
+          description: 'Optional: specific control ID (e.g., "A.5.1" for ISO27001, "PR.AA-01" for NIST CSF 2.0)',
         },
         regulation: {
           type: 'string',
           description: 'Optional: filter mappings to specific regulation',
+        },
+        limit: {
+          type: 'number',
+          description: 'Maximum control groups to return (default: 100)',
         },
       },
       required: ['framework'],
@@ -258,6 +266,10 @@ export const TOOLS: ToolDefinition[] = [
           type: 'string',
           description: 'Optional: filter to specific regulation',
         },
+        limit: {
+          type: 'number',
+          description: 'Maximum results to return (default: 50)',
+        },
       },
       required: ['term'],
     },
@@ -285,6 +297,10 @@ export const TOOLS: ToolDefinition[] = [
           enum: ['document', 'log', 'test_result', 'certification', 'policy', 'procedure'],
           description: 'Optional: filter by evidence type',
         },
+        limit: {
+          type: 'number',
+          description: 'Maximum results to return (default: 50)',
+        },
       },
     },
     handler: async (db, args) => {
@@ -307,7 +323,6 @@ function createAboutTool(context: AboutContext): ToolDefinition {
     inputSchema: {
       type: 'object',
       properties: {},
-      required: [],
     },
     handler: async (db) => {
       return await getAbout(db, context);

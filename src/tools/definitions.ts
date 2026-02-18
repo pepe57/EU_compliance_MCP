@@ -3,6 +3,7 @@ import type { DatabaseAdapter } from '../database/types.js';
 export interface DefinitionsInput {
   term: string;
   regulation?: string;
+  limit?: number;
 }
 
 export interface Definition {
@@ -18,6 +19,9 @@ export async function getDefinitions(
   input: DefinitionsInput
 ): Promise<Definition[]> {
   const { term, regulation } = input;
+  let limit = input.limit ?? 50;
+  if (!Number.isFinite(limit) || limit < 0) limit = 50;
+  limit = Math.min(Math.floor(limit), 500);
 
   let sql = `
     SELECT
@@ -29,7 +33,9 @@ export async function getDefinitions(
     WHERE term ILIKE $1
   `;
 
-  const params: string[] = [`%${term}%`];
+  // Escape LIKE wildcards in user input to prevent unintended pattern matching
+  const escapedTerm = term.replace(/%/g, '\\%').replace(/_/g, '\\_');
+  const params: (string | number)[] = [`%${escapedTerm}%`];
 
   if (regulation) {
     sql += ` AND regulation = $2`;
@@ -37,6 +43,8 @@ export async function getDefinitions(
   }
 
   sql += ` ORDER BY regulation, term`;
+  sql += ` LIMIT $${params.length + 1}`;
+  params.push(limit);
 
   const result = await db.query(sql, params);
 

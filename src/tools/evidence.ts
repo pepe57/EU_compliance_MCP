@@ -4,6 +4,7 @@ export interface EvidenceInput {
   regulation?: string;
   article?: string;
   evidence_type?: 'document' | 'log' | 'test_result' | 'certification' | 'policy' | 'procedure';
+  limit?: number;
 }
 
 export interface EvidenceRequirement {
@@ -29,6 +30,9 @@ export async function getEvidenceRequirements(
   input: EvidenceInput
 ): Promise<EvidenceRequirement[]> {
   const { regulation, article, evidence_type } = input;
+  let limit = input.limit ?? 50;
+  if (!Number.isFinite(limit) || limit < 0) limit = 50;
+  limit = Math.min(Math.floor(limit), 500);
 
   let sql = `
     SELECT
@@ -65,6 +69,8 @@ export async function getEvidenceRequirements(
   }
 
   sql += ` ORDER BY regulation, article::INTEGER, evidence_type`;
+  sql += ` LIMIT $${params.length + 1}`;
+  params.push(String(limit));
 
   const result = await db.query(sql, params);
 

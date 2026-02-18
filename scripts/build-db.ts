@@ -434,10 +434,17 @@ function buildDatabase() {
   const totalArticles = (db.prepare('SELECT COUNT(*) as c FROM articles').get() as any).c;
   const totalRecitals = (db.prepare('SELECT COUNT(*) as c FROM recitals').get() as any).c;
   const totalDefinitions = (db.prepare('SELECT COUNT(*) as c FROM definitions').get() as any).c;
+  const totalMappings = (db.prepare('SELECT COUNT(*) as c FROM control_mappings').get() as any).c;
+  const totalEvidence = (db.prepare('SELECT COUNT(*) as c FROM evidence_requirements').get() as any).c;
+  const totalApplicability = (db.prepare('SELECT COUNT(*) as c FROM applicability_rules').get() as any).c;
+
   insertMeta.run('regulations_count', String(totalRegulations));
   insertMeta.run('articles_count', String(totalArticles));
   insertMeta.run('recitals_count', String(totalRecitals));
   insertMeta.run('definitions_count', String(totalDefinitions));
+  insertMeta.run('control_mappings_count', String(totalMappings));
+  insertMeta.run('evidence_requirements_count', String(totalEvidence));
+  insertMeta.run('applicability_rules_count', String(totalApplicability));
 
   console.log(`\ndb_metadata populated: schema_version=2, tier=full, jurisdiction=EU`);
 

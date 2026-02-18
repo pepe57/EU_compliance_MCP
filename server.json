@@ -7,7 +7,7 @@
     "source": "github"
   },
   "homepage": "https://ansvar.eu",
-  "version": "1.0.0",
+  "version": "1.1.2",
   "license": "Apache-2.0",
   "keywords": [
     "compliance",
@@ -25,7 +25,7 @@
     {
       "registryType": "npm",
       "identifier": "@ansvar/eu-regulations-mcp",
-      "version": "1.0.0",
+      "version": "1.1.2",
       "transport": {
         "type": "stdio"
       }

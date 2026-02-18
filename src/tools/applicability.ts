@@ -54,7 +54,12 @@ export async function checkApplicability(
   db: DatabaseAdapter,
   input: ApplicabilityInput
 ): Promise<ApplicabilityResult> {
+  const VALID_SECTORS: Sector[] = ['financial', 'healthcare', 'energy', 'transport', 'digital_infrastructure', 'public_administration', 'manufacturing', 'other'];
   const { sector, subsector, detail_level = 'full' } = input;
+
+  if (!VALID_SECTORS.includes(sector)) {
+    throw new Error(`Invalid sector "${sector}". Must be one of: ${VALID_SECTORS.join(', ')}`);
+  }
 
   // Query for matching rules - check both sector match and subsector match
   // Note: We handle deduplication in JavaScript, so no need for DISTINCT ON

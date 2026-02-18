@@ -4,6 +4,7 @@ export interface MapControlsInput {
   framework: 'ISO27001' | 'NIST_CSF';
   control?: string;
   regulation?: string;
+  limit?: number;
 }
 
 export interface ControlMappingEntry {
@@ -23,7 +24,16 @@ export async function mapControls(
   db: DatabaseAdapter,
   input: MapControlsInput
 ): Promise<ControlMapping[]> {
+  const VALID_FRAMEWORKS = ['ISO27001', 'NIST_CSF'];
   const { framework, control, regulation } = input;
+
+  if (!VALID_FRAMEWORKS.includes(framework)) {
+    throw new Error(`Invalid framework "${framework}". Must be one of: ${VALID_FRAMEWORKS.join(', ')}`);
+  }
+
+  let limit = input.limit ?? 100;
+  if (!Number.isFinite(limit) || limit < 0) limit = 100;
+  limit = Math.min(Math.floor(limit), 1000);
 
   let sql = `
     SELECT
@@ -50,6 +60,8 @@ export async function mapControls(
   }
 
   sql += ` ORDER BY control_id, regulation`;
+  sql += ` LIMIT $${params.length + 1}`;
+  params.push(String(limit));
 
   const result = await db.query(sql, params);
 
