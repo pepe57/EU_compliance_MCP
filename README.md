@@ -10,7 +10,7 @@
 [![Database](https://img.shields.io/badge/database-pre--built-green)](docs/COVERAGE_GAPS.md)
 [![Recitals](https://img.shields.io/badge/recitals-3500%2B-blue)](docs/COVERAGE_GAPS.md)
 
-Query **49 EU regulations** — from GDPR and AI Act to DORA, Chips Act, MiFID II, eIDAS, Medical Device Regulation, and more — directly from Claude, Cursor, or any MCP-compatible client.
+Query **50 EU regulations** — from GDPR and AI Act to DORA, Chips Act, MiFID II, eIDAS, Medical Device Regulation, MDCG cybersecurity guidance, and more — directly from Claude, Cursor, or any MCP-compatible client.
 
 If you're building digital products, financial services, healthcare tech, or connected devices for the European market, this is your compliance reference.
 
