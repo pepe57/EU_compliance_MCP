@@ -165,7 +165,7 @@ describe('Content Smoke Tests (Critical Articles)', () => {
       .prepare('SELECT COUNT(*) as count FROM regulations')
       .get() as { count: number };
 
-    expect(regulationCount.count).toBe(49);
+    expect(regulationCount.count).toBe(50);
   });
 
   it('validates sampled articles represent diverse characteristics', () => {

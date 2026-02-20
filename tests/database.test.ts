@@ -46,7 +46,7 @@ describe('Database', () => {
       "SELECT COUNT(*) as count FROM regulations"
     ).get() as { count: number };
     
-    expect(result.count).toBe(49);
+    expect(result.count).toBe(50);
     db.close();
   });
 
