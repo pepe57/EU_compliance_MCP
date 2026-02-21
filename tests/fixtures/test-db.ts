@@ -124,6 +124,23 @@ CREATE TABLE evidence_requirements (
   artifact_name TEXT,
   description TEXT
 );
+
+-- Premium tier: article version tracking
+CREATE TABLE article_versions (
+  id INTEGER PRIMARY KEY,
+  article_id INTEGER NOT NULL,
+  body_text TEXT NOT NULL,
+  effective_date TEXT,
+  superseded_date TEXT,
+  scraped_at TEXT NOT NULL,
+  change_summary TEXT,
+  diff_from_previous TEXT,
+  source_url TEXT,
+  FOREIGN KEY (article_id) REFERENCES articles(rowid)
+);
+
+CREATE INDEX idx_av_article ON article_versions(article_id);
+CREATE INDEX idx_av_effective ON article_versions(effective_date);
 `;
 
 const SAMPLE_DATA = `
@@ -202,6 +219,12 @@ INSERT INTO source_registry (regulation, celex_id, eur_lex_version, last_fetched
   ('GDPR', '32016R0679', '2016-05-04', '2026-02-14T06:00:00Z', 6, 6, 'complete'),
   ('NIS2', '32022L2555', '2022-12-27', '2026-02-14T06:00:00Z', 4, 4, 'complete'),
   ('DORA', '32022R2554', '2022-12-27', '2026-02-14T06:00:00Z', 4, 4, 'complete');
+
+-- Sample article version history (premium tier)
+INSERT INTO article_versions (article_id, body_text, effective_date, superseded_date, scraped_at, change_summary, diff_from_previous, source_url) VALUES
+  (1, 'Original text of GDPR Article 1 from 2016 publication.', '2016-05-04', '2024-01-15', '2026-01-01T00:00:00Z', 'Initial publication in OJ L 119', NULL, 'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679'),
+  (1, 'This Regulation lays down rules relating to the protection of natural persons with regard to the processing of personal data and rules relating to the free movement of personal data.', '2024-01-15', NULL, '2026-02-01T00:00:00Z', 'Minor editorial correction to align with corrigendum', '--- a/GDPR_Article_1\n+++ b/GDPR_Article_1\n@@ -1,1 +1,1 @@\n-Original text of GDPR Article 1 from 2016 publication.\n+This Regulation lays down rules relating to the protection of natural persons with regard to the processing of personal data and rules relating to the free movement of personal data.', 'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679'),
+  (7, 'This Directive lays down measures with a view to achieving a high common level of cybersecurity across the Union.', '2022-12-27', NULL, '2026-01-15T00:00:00Z', 'Initial publication', NULL, 'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022L2555');
 
 -- Sample evidence requirements
 INSERT INTO evidence_requirements (regulation, article, requirement_summary, evidence_type, artifact_name, description) VALUES
