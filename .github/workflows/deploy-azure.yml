@@ -10,7 +10,7 @@
 # 1. Org secrets: AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_SUBSCRIPTION_ID
 # 2. Reusable workflow in Ansvar-Systems/.github/.github/workflows/mcp-deploy.yml
 # 3. Container App already provisioned (see infrastructure/azure-mcps/provision-mcps.sh)
-# 4. GitHub environment "dev" configured in the repo
+# 4. Container App already provisioned in Azure
 #
 # =============================================================================
 
