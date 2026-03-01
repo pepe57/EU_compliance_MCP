@@ -1,0 +1,32 @@
+# =============================================================================
+# MCP Azure Deployment — Caller Workflow
+# =============================================================================
+#
+# Copy this file to your MCP repo as: .github/workflows/deploy-azure.yml
+# Then replace ca-mcp-eu-regulations with the actual Azure Container App name
+# from infrastructure/azure-mcps/mcp-manifest.json (the "containerApp" field).
+#
+# PREREQUISITES:
+# 1. Org secrets: AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_SUBSCRIPTION_ID
+# 2. Reusable workflow in Ansvar-Systems/.github/.github/workflows/mcp-deploy.yml
+# 3. Container App already provisioned (see infrastructure/azure-mcps/provision-mcps.sh)
+# 4. GitHub environment "dev" configured in the repo
+#
+# =============================================================================
+
+name: Deploy to Azure
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    uses: Ansvar-Systems/.github/.github/workflows/mcp-deploy.yml@main
+    with:
+      container-app-name: "ca-mcp-eu-regulations"
+    secrets: inherit
