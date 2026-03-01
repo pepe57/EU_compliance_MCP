@@ -6,9 +6,8 @@
 # Registry, and deploys to the corresponding Azure Container App.
 #
 # PREREQUISITES:
-# 1. Org secrets: AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_SUBSCRIPTION_ID
-# 2. OIDC federated credential configured in Azure AD
-# 3. Container App already provisioned (see scripts/provision-azure-mcps.sh)
+# 1. Org secret: AZURE_CREDENTIALS (service principal JSON)
+# 2. Container App already provisioned (see scripts/provision-azure-mcps.sh)
 #
 # =============================================================================
 
@@ -21,10 +20,6 @@ on:
 concurrency:
   group: deploy-${{ github.ref }}
   cancel-in-progress: true
-
-permissions:
-  id-token: write
-  contents: read
 
 env:
   REGISTRY: ansvardev.azurecr.io
@@ -43,9 +38,7 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Login to ACR
         run: az acr login --name ansvardev
