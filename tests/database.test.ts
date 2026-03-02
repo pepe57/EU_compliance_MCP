@@ -105,13 +105,52 @@ describe('Database', () => {
 
   it('should contain applicability rules', () => {
     const db = new Database(DB_PATH, { readonly: true });
-    
+
     const result = db.prepare(
       "SELECT COUNT(*) as count FROM applicability_rules"
     ).get() as { count: number };
-    
+
     // Should have 305+ applicability rules
     expect(result.count).toBeGreaterThan(300);
+    db.close();
+  });
+
+  it('should have article_versions table for premium tier', () => {
+    const db = new Database(DB_PATH, { readonly: true });
+
+    const tableCheck = db.prepare(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name='article_versions'"
+    ).get();
+
+    expect(tableCheck).toBeDefined();
+
+    // Verify schema has expected columns
+    const columns = db.prepare("PRAGMA table_info(article_versions)").all() as Array<{ name: string }>;
+    const columnNames = columns.map(c => c.name);
+
+    expect(columnNames).toContain('article_id');
+    expect(columnNames).toContain('body_text');
+    expect(columnNames).toContain('effective_date');
+    expect(columnNames).toContain('superseded_date');
+    expect(columnNames).toContain('scraped_at');
+    expect(columnNames).toContain('change_summary');
+    expect(columnNames).toContain('diff_from_previous');
+    expect(columnNames).toContain('source_url');
+
+    db.close();
+  });
+
+  it('should have indexes on article_versions for performance', () => {
+    const db = new Database(DB_PATH, { readonly: true });
+
+    const indexes = db.prepare(
+      "SELECT name FROM sqlite_master WHERE type='index' AND tbl_name='article_versions'"
+    ).all() as Array<{ name: string }>;
+
+    const indexNames = indexes.map(i => i.name);
+    expect(indexNames).toContain('idx_av_article');
+    expect(indexNames).toContain('idx_av_effective');
+
     db.close();
   });
 });

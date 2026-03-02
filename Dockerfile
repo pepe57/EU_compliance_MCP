@@ -6,7 +6,7 @@
 # Build command: docker buildx build --platform linux/amd64 -t <image> .
 
 # Build stage
-FROM --platform=linux/amd64 node:24-alpine AS builder
+FROM node:24-alpine AS builder
 
 # Install build tools for native modules
 RUN apk add --no-cache python3 make g++
@@ -27,7 +27,7 @@ COPY packages/teams-extension/package.json ./packages/teams-extension/
 RUN pnpm install --frozen-lockfile --ignore-scripts
 
 # Rebuild better-sqlite3 for build tools to work
-RUN cd node_modules/.pnpm/better-sqlite3@*/node_modules/better-sqlite3 && npm run install
+RUN npm rebuild better-sqlite3
 
 # Copy all source code and configs
 COPY packages/ ./packages/
@@ -41,7 +41,7 @@ RUN pnpm -r --workspace-concurrency=1 build
 RUN npm run build
 
 # Production stage
-FROM --platform=linux/amd64 node:24-alpine AS production
+FROM node:24-alpine AS production
 
 # Install build tools for native modules (better-sqlite3)
 RUN apk add --no-cache python3 make g++
@@ -63,7 +63,7 @@ COPY --from=builder /app/dist ./dist
 RUN pnpm install --frozen-lockfile --prod --ignore-scripts
 
 # Rebuild better-sqlite3 for this platform (Node v24 + Linux)
-RUN cd node_modules/.pnpm/better-sqlite3@*/node_modules/better-sqlite3 && npm run install
+RUN npm rebuild better-sqlite3
 
 # Clean up build tools
 RUN apk del python3 make g++ && \

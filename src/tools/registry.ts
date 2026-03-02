@@ -15,6 +15,14 @@ import { checkApplicability, type ApplicabilityInput } from './applicability.js'
 import { getDefinitions, type DefinitionsInput } from './definitions.js';
 import { getEvidenceRequirements, type EvidenceInput } from './evidence.js';
 import { getAbout, type AboutContext } from './about.js';
+import {
+  getArticleHistory,
+  type GetArticleHistoryInput,
+  diffArticle,
+  type DiffArticleInput,
+  getRecentChanges,
+  type GetRecentChangesInput,
+} from './version-tracking.js';
 
 interface ToolDefinition {
   name: string;
@@ -306,6 +314,88 @@ export const TOOLS: ToolDefinition[] = [
     handler: async (db, args) => {
       const input = args as unknown as EvidenceInput;
       return await getEvidenceRequirements(db, input);
+    },
+  },
+  // --- Premium tools: version tracking ---
+  {
+    name: 'get_article_history',
+    description:
+      'Get the full version timeline for a specific article, showing all amendments with dates and change summaries. Premium feature — requires Ansvar Intelligence Portal.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        regulation: {
+          type: 'string',
+          description: 'Regulation ID (e.g., "NIS2", "DORA", "GDPR")',
+        },
+        article: {
+          type: 'string',
+          description: 'Article number (e.g., "21", "6")',
+        },
+      },
+      required: ['regulation', 'article'],
+    },
+    handler: async (db, args) => {
+      const input = args as unknown as GetArticleHistoryInput;
+      return await getArticleHistory(db, input);
+    },
+  },
+  {
+    name: 'diff_article',
+    description:
+      'Show what changed in a specific article between two dates, including a unified diff and AI-generated change summary. Premium feature — requires Ansvar Intelligence Portal.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        regulation: {
+          type: 'string',
+          description: 'Regulation ID (e.g., "NIS2", "DORA", "GDPR")',
+        },
+        article: {
+          type: 'string',
+          description: 'Article number (e.g., "21", "6")',
+        },
+        from_date: {
+          type: 'string',
+          description: 'ISO date to diff from (e.g., "2024-01-01")',
+        },
+        to_date: {
+          type: 'string',
+          description: 'ISO date to diff to (defaults to today)',
+        },
+      },
+      required: ['regulation', 'article', 'from_date'],
+    },
+    handler: async (db, args) => {
+      const input = args as unknown as DiffArticleInput;
+      return await diffArticle(db, input);
+    },
+  },
+  {
+    name: 'get_recent_changes',
+    description:
+      'List all articles that changed since a given date, with change summaries. Optionally filter to a specific regulation. Premium feature — requires Ansvar Intelligence Portal.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        regulation: {
+          type: 'string',
+          description: 'Optional: filter to a specific regulation (e.g., "NIS2")',
+        },
+        since: {
+          type: 'string',
+          description: 'ISO date (e.g., "2024-06-01")',
+        },
+        limit: {
+          type: 'number',
+          description: 'Maximum results (default: 50, max: 200)',
+        },
+      },
+      required: ['since'],
+    },
+    handler: async (db, args) => {
+      const input = args as unknown as GetRecentChangesInput;
+      return await getRecentChanges(db, input);
     },
   },
 ];
