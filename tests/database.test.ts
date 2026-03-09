@@ -39,14 +39,14 @@ describe('Database', () => {
     db.close();
   });
 
-  it('should contain all 37 regulations', () => {
+  it('should contain all 61 regulations', () => {
     const db = new Database(DB_PATH, { readonly: true });
-    
+
     const result = db.prepare(
       "SELECT COUNT(*) as count FROM regulations"
     ).get() as { count: number };
-    
-    expect(result.count).toBe(50);
+
+    expect(result.count).toBe(61);
     db.close();
   });
 
