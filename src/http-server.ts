@@ -96,9 +96,9 @@ function createMcpServer(): Server {
 
 // Start HTTP server with Streamable HTTP transport
 async function main() {
-  const mcpServer = createMcpServer();
-
   // Map to store transports by session ID
+  // Each session gets its own Server + Transport pair because the MCP SDK
+  // Server class only supports a single transport connection at a time.
   const transports = new Map<string, StreamableHTTPServerTransport>();
 
   const httpServer = createServer(async (req, res) => {
@@ -122,12 +122,13 @@ async function main() {
         // Reuse existing transport for this session
         transport = transports.get(sessionId)!;
       } else {
-        // Create new transport with session ID generator
+        // Create new Server + Transport per session to avoid
+        // "Already connected to a transport" crash on concurrent requests
+        const mcpServer = createMcpServer();
         transport = new StreamableHTTPServerTransport({
           sessionIdGenerator: () => randomUUID(),
         });
 
-        // Connect MCP server to transport
         await mcpServer.connect(transport);
 
         // Store transport by session ID once it's assigned
