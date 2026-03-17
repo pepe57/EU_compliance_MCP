@@ -22,6 +22,7 @@ import { getDefinitions } from '../../src/tools/definitions.js';
 import { mapControls } from '../../src/tools/map.js';
 import { checkApplicability } from '../../src/tools/applicability.js';
 import { getAbout } from '../../src/tools/about.js';
+import { getRegulationGuide } from '../../src/tools/regulation-guide.js';
 import type { DatabaseAdapter } from '../../src/database/types.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -49,6 +50,7 @@ interface GoldenTest {
 }
 
 function getNestedValue(obj: any, path: string): any {
+  if (path === '') return obj;
   const parts = path.replace(/\[(\d+)\]/g, '.$1').split('.');
   let current = obj;
   for (const part of parts) {
@@ -118,6 +120,9 @@ describe('Golden Contract Tests', () => {
               fingerprint: 'test',
               dbBuilt: '2026-01-01',
             });
+            break;
+          case 'get_regulation_guide':
+            result = getRegulationGuide(test.input as any);
             break;
           default:
             throw new Error(`Unknown tool: ${test.tool}`);
