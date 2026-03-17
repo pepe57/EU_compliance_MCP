@@ -1,0 +1,93 @@
+{
+  "schema_version": "1.0",
+  "regulation_id": "NIS2",
+  "regulation_name": "Network and Information Security Directive 2",
+  "celex_id": "32022L2555",
+  "effective_date": "2024-10-17",
+  "guide_updated": "2026-03-17",
+
+  "delegated_acts": [],
+
+  "proportionality": {
+    "description": "NIS2 distinguishes essential and important entities with different supervisory regimes",
+    "tiers": [
+      {
+        "name": "essential",
+        "applies_to": "Annex I sectors above size thresholds, plus designated entities (Art. 3(1))",
+        "key_articles": ["21", "23", "32"],
+        "note": "Proactive supervision by competent authority. Higher fines (Art. 34): max EUR 10M or 2% worldwide turnover."
+      },
+      {
+        "name": "important",
+        "applies_to": "Annex I/II sectors meeting medium enterprise thresholds (Art. 3(2))",
+        "key_articles": ["21", "23", "33"],
+        "note": "Reactive supervision (ex post). Lower fines: max EUR 7M or 1.4% worldwide turnover."
+      }
+    ],
+    "derogations": []
+  },
+
+  "pitfalls": [
+    {
+      "id": "transposition_variance",
+      "severity": "high",
+      "article": "41",
+      "description": "NIS2 is a directive, not a regulation. Member states transpose into national law with variations. Always check the national implementing act via the relevant Law MCP.",
+      "detail_level": "quick"
+    },
+    {
+      "id": "supply_chain_art21",
+      "severity": "high",
+      "article": "21(2)(d)",
+      "description": "Art. 21(2)(d) requires supply chain security measures including security-related aspects of relationships with direct suppliers and service providers. This extends beyond ICT vendors.",
+      "detail_level": "quick"
+    },
+    {
+      "id": "lex_specialis_dora",
+      "severity": "medium",
+      "article": "4",
+      "description": "NIS2 Art. 4 recognizes lex specialis: where sector-specific EU legislation (e.g., DORA) imposes equivalent or higher cybersecurity requirements, those provisions prevail. Financial entities subject to DORA may be exempt from NIS2 cybersecurity risk management.",
+      "detail_level": "quick"
+    }
+  ],
+
+  "cross_regulation": [
+    {
+      "regulation": "DORA",
+      "relationship": "lex_specialis",
+      "key_provisions": ["NIS2 Art. 4", "NIS2 Recital 28"],
+      "note": "DORA is lex specialis for financial entities. Where DORA addresses ICT risk, NIS2 defers."
+    },
+    {
+      "regulation": "CER",
+      "relationship": "complementary",
+      "key_provisions": ["CER Art. 1"],
+      "note": "Critical Entities Resilience Directive complements NIS2 for physical resilience of critical infrastructure."
+    }
+  ],
+
+  "key_structures": [],
+  "key_recitals": [],
+
+  "national_implementation": {
+    "pattern": "NIS2 is a directive — search the relevant Law MCP for national transposition acts (deadline was 2024-10-17).",
+    "known_examples": []
+  },
+
+  "evidence_hint": "Call get_evidence_requirements(regulation='NIS2') for per-article audit artifacts.",
+
+  "timeline": [
+    {
+      "event": "Transposition deadline",
+      "date": "2024-10-17",
+      "note": "Member states must transpose into national law"
+    },
+    {
+      "event": "NIS2 applicable",
+      "date": "2024-10-18",
+      "note": "Directive in force"
+    }
+  ],
+
+  "citation_format": "Cite as: NIS2 Art. X(Y). Note: NIS2 is Directive (EU) 2022/2555."
+}

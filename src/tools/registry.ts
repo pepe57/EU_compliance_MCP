@@ -23,6 +23,7 @@ import {
   getRecentChanges,
   type GetRecentChangesInput,
 } from './version-tracking.js';
+import { getRegulationGuide, type RegulationGuideInput } from './regulation-guide.js';
 
 interface ToolDefinition {
   name: string;
@@ -314,6 +315,36 @@ export const TOOLS: ToolDefinition[] = [
     handler: async (db, args) => {
       const input = args as unknown as EvidenceInput;
       return await getEvidenceRequirements(db, input);
+    },
+  },
+  {
+    name: 'get_regulation_guide',
+    description:
+      'Get analysis guidance for a specific regulation. Returns delegated acts, ' +
+      'proportionality tiers, commonly missed provisions, cross-regulation pointers, and ' +
+      'analysis methodology hints. Call this BEFORE analyzing any regulation to discover ' +
+      'what data is available and how to use it effectively.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        regulation: {
+          type: 'string',
+          description: 'Regulation ID (e.g., "DORA", "GDPR", "NIS2", "AI_ACT")',
+        },
+        detail_level: {
+          type: 'string',
+          enum: ['quick', 'full'],
+          description:
+            'Quick (~500 tokens): delegated acts, proportionality, top pitfalls, ' +
+            'cross-regulation. Full (~1500 tokens): adds key article structures, evidence ' +
+            'hints, recitals, national law pointers. Default: quick.',
+        },
+      },
+      required: ['regulation'],
+    },
+    handler: async (_db, args) => {
+      const input = args as unknown as RegulationGuideInput;
+      return getRegulationGuide(input);
     },
   },
   // --- Premium tools: version tracking ---
