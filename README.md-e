@@ -38,12 +38,12 @@ This MCP server makes EU regulations **searchable, cross-referenceable, and AI-r
 
 > Connect directly to the hosted version — zero dependencies, nothing to install.
 
-**Endpoint:** `https://mcp.ansvar.eu/eu-regulations/mcp`
+**Endpoint:** `https://eu-regulations-mcp.vercel.app/mcp`
 
 | Client | How to Connect |
 |--------|---------------|
 | **Claude.ai** | Settings > Connectors > Add Integration > paste URL |
-| **Claude Code** | `claude mcp add eu-regulations --transport http https://mcp.ansvar.eu/eu-regulations/mcp` |
+| **Claude Code** | `claude mcp add eu-regulations --transport http https://eu-regulations-mcp.vercel.app/mcp` |
 | **Claude Desktop** | Add to config (see below) |
 | **GitHub Copilot** | Add to VS Code settings (see below) |
 
@@ -54,7 +54,7 @@ This MCP server makes EU regulations **searchable, cross-referenceable, and AI-r
   "mcpServers": {
     "eu-regulations": {
       "type": "url",
-      "url": "https://mcp.ansvar.eu/eu-regulations/mcp"
+      "url": "https://eu-regulations-mcp.vercel.app/mcp"
     }
   }
 }
@@ -67,7 +67,7 @@ This MCP server makes EU regulations **searchable, cross-referenceable, and AI-r
   "github.copilot.chat.mcp.servers": {
     "eu-regulations": {
       "type": "http",
-      "url": "https://mcp.ansvar.eu/eu-regulations/mcp"
+      "url": "https://eu-regulations-mcp.vercel.app/mcp"
     }
   }
 }
