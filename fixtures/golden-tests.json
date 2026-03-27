@@ -95,11 +95,11 @@
   },
   {
     "id": "regulation-count",
-    "description": "Total regulation count is 50",
+    "description": "Total regulation count is 61",
     "tool": "about",
     "input": {},
     "assertions": [
-      { "path": "dataset.counts.regulations", "equals": 50 }
+      { "path": "dataset.counts.regulations", "equals": 61 }
     ]
   },
   {
@@ -137,6 +137,35 @@
     "input": { "query": "§ 17 Absatz (1) Datenschutz-Grundverordnung", "limit": 5 },
     "assertions": [
       { "path": "error", "notExists": true }
+    ]
+  },
+  {
+    "id": "regulation-guide-dora-quick",
+    "description": "DORA quick guide returns delegated acts",
+    "tool": "get_regulation_guide",
+    "input": { "regulation": "DORA" },
+    "assertions": [
+      { "path": "", "contains": "DORA_RTS" },
+      { "path": "", "contains": "Proportionality" }
+    ]
+  },
+  {
+    "id": "regulation-guide-dora-full",
+    "description": "DORA full guide includes recitals and structures",
+    "tool": "get_regulation_guide",
+    "input": { "regulation": "DORA", "detail_level": "full" },
+    "assertions": [
+      { "path": "", "contains": "Key Recitals" },
+      { "path": "", "contains": "Key Article Structures" }
+    ]
+  },
+  {
+    "id": "regulation-guide-unknown-fallback",
+    "description": "Unknown regulation returns fallback with pointers",
+    "tool": "get_regulation_guide",
+    "input": { "regulation": "NONEXISTENT" },
+    "assertions": [
+      { "path": "", "contains": "list_regulations" }
     ]
   }
 ]

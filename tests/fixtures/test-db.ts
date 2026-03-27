@@ -141,6 +141,58 @@ CREATE TABLE article_versions (
 
 CREATE INDEX idx_av_article ON article_versions(article_id);
 CREATE INDEX idx_av_effective ON article_versions(effective_date);
+
+-- Guidance documents (MDCG, EDPB, ENISA, etc.)
+CREATE TABLE guidance_documents (
+  id TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  issuing_body TEXT NOT NULL,
+  document_reference TEXT,
+  date_published TEXT,
+  date_revised TEXT,
+  related_regulation TEXT,
+  url TEXT,
+  pdf_url TEXT,
+  status TEXT DEFAULT 'current',
+  metadata TEXT
+);
+
+CREATE TABLE guidance_sections (
+  rowid INTEGER PRIMARY KEY,
+  document_id TEXT NOT NULL REFERENCES guidance_documents(id),
+  section_number TEXT NOT NULL,
+  title TEXT NOT NULL,
+  content TEXT NOT NULL,
+  parent_section TEXT,
+  metadata TEXT,
+  UNIQUE(document_id, section_number)
+);
+
+CREATE VIRTUAL TABLE guidance_sections_fts USING fts5(
+  document_id,
+  section_number,
+  title,
+  content,
+  content='guidance_sections',
+  content_rowid='rowid'
+);
+
+CREATE TRIGGER guidance_sections_ai AFTER INSERT ON guidance_sections BEGIN
+  INSERT INTO guidance_sections_fts(rowid, document_id, section_number, title, content)
+  VALUES (new.rowid, new.document_id, new.section_number, new.title, new.content);
+END;
+
+CREATE TRIGGER guidance_sections_ad AFTER DELETE ON guidance_sections BEGIN
+  INSERT INTO guidance_sections_fts(guidance_sections_fts, rowid, document_id, section_number, title, content)
+  VALUES ('delete', old.rowid, old.document_id, old.section_number, old.title, old.content);
+END;
+
+CREATE TRIGGER guidance_sections_au AFTER UPDATE ON guidance_sections BEGIN
+  INSERT INTO guidance_sections_fts(guidance_sections_fts, rowid, document_id, section_number, title, content)
+  VALUES ('delete', old.rowid, old.document_id, old.section_number, old.title, old.content);
+  INSERT INTO guidance_sections_fts(rowid, document_id, section_number, title, content)
+  VALUES (new.rowid, new.document_id, new.section_number, new.title, new.content);
+END;
 `;
 
 const SAMPLE_DATA = `
@@ -231,6 +283,23 @@ INSERT INTO evidence_requirements (regulation, article, requirement_summary, evi
   ('GDPR', '32', 'Security of processing', 'policy', 'Information Security Policy', 'Document describing technical and organisational measures'),
   ('GDPR', '33', 'Breach notification process', 'procedure', 'Breach Notification Procedure', 'Process for notifying supervisory authority within 72 hours'),
   ('DORA', '17', 'Incident management', 'procedure', 'ICT Incident Management Process', 'Documented process for detecting, managing and notifying ICT incidents');
+
+-- Sample MDCG guidance documents
+INSERT INTO guidance_documents (id, title, issuing_body, document_reference, date_published, date_revised, related_regulation, url, pdf_url, status) VALUES
+  ('MDCG_2019_16', 'Guidance on Cybersecurity for medical devices', 'MDCG', 'MDCG 2019-16 rev.1', '2019-12-01', '2023-03-01', 'MDR', 'https://health.ec.europa.eu/medical-devices-sector/new-regulations/guidance-mdcg-endorsed-documents-and-other-guidance_en', 'https://health.ec.europa.eu/system/files/2023-04/mdcg_2019-16-rev1_en.pdf', 'current'),
+  ('MDCG_2019_11', 'Guidance on Qualification and Classification of Software in Regulation (EU) 2017/745 - MDR and Regulation (EU) 2017/746 - IVDR', 'MDCG', 'MDCG 2019-11 rev.2', '2019-10-01', '2024-07-01', 'both', 'https://health.ec.europa.eu/medical-devices-sector/new-regulations/guidance-mdcg-endorsed-documents-and-other-guidance_en', 'https://health.ec.europa.eu/system/files/2024-07/mdcg_2019-11-rev2_en.pdf', 'current'),
+  ('MDCG_2020_1', 'Guidance on Clinical Evaluation (MDR) / Performance Evaluation (IVDR) of Medical Device Software', 'MDCG', 'MDCG 2020-1 rev.1', '2020-03-01', '2024-04-01', 'both', 'https://health.ec.europa.eu/medical-devices-sector/new-regulations/guidance-mdcg-endorsed-documents-and-other-guidance_en', 'https://health.ec.europa.eu/system/files/2024-04/mdcg_2020-1-rev1_en.pdf', 'current');
+
+-- Sample MDCG guidance sections
+INSERT INTO guidance_sections (document_id, section_number, title, content, parent_section) VALUES
+  ('MDCG_2019_16', '1', 'Introduction and Scope', 'This document provides guidance on cybersecurity requirements for medical devices placed on the EU market under Regulation (EU) 2017/745 (MDR) and Regulation (EU) 2017/746 (IVDR). It addresses the cybersecurity aspects of the General Safety and Performance Requirements (GSPRs) set out in Annex I of the MDR and IVDR.', NULL),
+  ('MDCG_2019_16', '3', 'Pre-market Cybersecurity Requirements', 'Medical device manufacturers shall establish a cybersecurity risk management process as part of the overall risk management process. This shall include identification of cybersecurity assets, threat modeling using STRIDE or equivalent methodology, vulnerability assessment, and risk mitigation measures. The manufacturer shall implement a Secure Product Development Framework (SPDF) covering the entire device lifecycle.', NULL),
+  ('MDCG_2019_16', '3.1', 'Threat Modeling', 'Manufacturers shall perform systematic threat modeling for their medical devices. The threat model shall identify attack vectors, potential threat actors, and the impact of successful attacks on device safety and performance. STRIDE methodology or equivalent systematic approaches are recommended.', '3'),
+  ('MDCG_2019_16', '3.2', 'Security Testing', 'Prior to placing a medical device on the market, manufacturers shall conduct comprehensive security testing including vulnerability scanning, penetration testing, fuzz testing, and static code analysis. Test results shall be documented and included in the technical documentation.', '3'),
+  ('MDCG_2019_16', '4', 'Post-market Cybersecurity', 'Manufacturers shall establish and maintain a post-market cybersecurity monitoring process. This includes coordinated vulnerability disclosure, security patch management, and communication with users and regulators about identified vulnerabilities. Manufacturers shall provide security updates throughout the expected lifetime of the device.', NULL),
+  ('MDCG_2019_11', '2', 'Qualification of Software', 'This section provides criteria for determining whether software qualifies as a medical device under the MDR or IVDR. Software that performs an action on data for a medical purpose is a medical device. Software that only stores, communicates, or performs simple searches of data without processing or analyzing it is not a medical device.', NULL),
+  ('MDCG_2019_11', '3', 'Classification of SaMD', 'Software as a Medical Device (SaMD) shall be classified according to Rule 11 of Annex VIII of the MDR. The classification depends on the significance of the information provided by the SaMD to the healthcare decision, and the healthcare situation or patient condition.', NULL),
+  ('MDCG_2020_1', '2', 'Clinical Evaluation of Medical Device Software', 'Clinical evaluation of medical device software shall demonstrate that the software achieves its intended clinical benefit, that undesirable side-effects are acceptable, and that the overall benefit-risk ratio is positive. The clinical evaluation shall cover all intended purposes and all target populations.', NULL);
 `;
 
 export function createTestDatabase(): DatabaseAdapter {

@@ -165,7 +165,7 @@ describe('Content Smoke Tests (Critical Articles)', () => {
       .prepare('SELECT COUNT(*) as count FROM regulations')
       .get() as { count: number };
 
-    expect(regulationCount.count).toBe(50);
+    expect(regulationCount.count).toBe(61);
   });
 
   it('validates sampled articles represent diverse characteristics', () => {
@@ -173,8 +173,8 @@ describe('Content Smoke Tests (Critical Articles)', () => {
       .prepare('SELECT COUNT(*) as count FROM articles')
       .get() as { count: number };
 
-    // Production DB should have 2,528 articles
-    expect(articleCount.count).toBeGreaterThan(2000);
-    expect(articleCount.count).toBeLessThan(3000);
+    // Production DB should have 4,054 articles (after financial regulations expansion)
+    expect(articleCount.count).toBeGreaterThan(3500);
+    expect(articleCount.count).toBeLessThan(5000);
   });
 });

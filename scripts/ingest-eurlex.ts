@@ -61,6 +61,19 @@ const REGULATION_METADATA: Record<string, { id: string; full_name: string; effec
   // UN Regulations (adopted by EU)
   '42021X0387': { id: 'UN_R155', full_name: 'UN Regulation No. 155 - Cyber security and cyber security management system', effective_date: '2021-01-22' },
   '42025X0005': { id: 'UN_R155', full_name: 'UN Regulation No. 155 - Cyber security and cyber security management system (Supplement 3)', effective_date: '2025-01-10' },
+  // Financial Services regulations
+  '32012R0648': { id: 'EMIR', full_name: 'European Market Infrastructure Regulation', effective_date: '2012-08-16' },
+  '32024R2987': { id: 'EMIR3', full_name: 'EMIR 3.0 — Active Accounts Regulation', effective_date: '2024-12-24' },
+  '32013R0575': { id: 'CRR', full_name: 'Capital Requirements Regulation', effective_date: '2014-01-01' },
+  '32013L0036': { id: 'CRD', full_name: 'Capital Requirements Directive', effective_date: '2014-01-01' },
+  '32009L0138': { id: 'SOLVENCY2', full_name: 'Solvency II Directive', effective_date: '2016-01-01' },
+  '32014R1286': { id: 'PRIIPS', full_name: 'PRIIPs Regulation', effective_date: '2018-01-01' },
+  '32009L0065': { id: 'UCITS', full_name: 'UCITS Directive', effective_date: '2011-07-01' },
+  '32023R1113': { id: 'TFR', full_name: 'Transfer of Funds Regulation', effective_date: '2024-12-30' },
+  // Proposed financial regulations (COM documents)
+  '52023PC0366': { id: 'PSD3', full_name: 'Payment Services Directive 3 (Proposed)' },
+  '52023PC0367': { id: 'PSR', full_name: 'Payment Services Regulation (Proposed)' },
+  '52023PC0360': { id: 'FIDA', full_name: 'Financial Data Access Regulation (Proposed)' },
 };
 
 async function fetchEurLexHtml(celexId: string, useBrowser = false): Promise<string> {

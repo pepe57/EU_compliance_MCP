@@ -1,4 +1,5 @@
 import type { DatabaseAdapter } from '../database/types.js';
+import { escapeFts5Query } from './fts-utils.js';
 
 export interface SearchInput {
   query: string;
@@ -13,30 +14,6 @@ export interface SearchResult {
   snippet: string;
   relevance: number;
   type?: 'article' | 'recital';
-}
-
-/**
- * Escape special FTS5 query characters and build optimal search query for SQLite.
- */
-function escapeFts5Query(query: string): string {
-  const stopwords = new Set(['a', 'an', 'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by']);
-
-  const words = query
-    .replace(/[*+^():.§/|;=~!@#$%&\\{}[\],<>]/g, '')
-    .replace(/['"]/g, '')
-    .replace(/-/g, ' ')
-    .split(/\s+/)
-    .filter(word => word.length > 2 && !stopwords.has(word.toLowerCase()));
-
-  if (words.length === 0) {
-    return '';
-  }
-
-  if (words.length <= 3) {
-    return words.join(' ');  // Space is AND in FTS5
-  } else {
-    return words.map(word => `${word}*`).join(' OR ');  // Suffix * for prefix matching
-  }
 }
 
 /**

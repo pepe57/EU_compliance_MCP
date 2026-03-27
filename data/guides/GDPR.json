@@ -1,0 +1,88 @@
+{
+  "schema_version": "1.0",
+  "regulation_id": "GDPR",
+  "regulation_name": "General Data Protection Regulation",
+  "celex_id": "32016R0679",
+  "effective_date": "2018-05-25",
+  "guide_updated": "2026-03-17",
+
+  "delegated_acts": [],
+
+  "proportionality": {
+    "description": "GDPR applies proportionality through risk-based obligations and SME derogations",
+    "tiers": [
+      {
+        "name": "full",
+        "applies_to": "All controllers and processors handling personal data",
+        "key_articles": ["5-11", "12-23", "24-43"],
+        "note": "Full GDPR obligations"
+      },
+      {
+        "name": "reduced_record_keeping",
+        "applies_to": "Enterprises with fewer than 250 employees (Art. 30(5) derogation)",
+        "key_articles": ["30(5)"],
+        "note": "Exemption from records of processing UNLESS processing is not occasional, involves special categories, or is likely to result in risk to rights and freedoms"
+      }
+    ],
+    "derogations": []
+  },
+
+  "pitfalls": [
+    {
+      "id": "dpo_mandatory_conditions",
+      "severity": "high",
+      "article": "37",
+      "description": "DPO appointment is mandatory only in three cases: (a) public authority, (b) core activities require large-scale systematic monitoring, (c) core activities involve large-scale processing of special categories. Not all organizations need a DPO.",
+      "detail_level": "quick"
+    },
+    {
+      "id": "legitimate_interest_balancing",
+      "severity": "high",
+      "article": "6(1)(f)",
+      "description": "Legitimate interest requires a three-part test: (1) identify the legitimate interest, (2) necessity test, (3) balancing test against data subject rights. A bare assertion of legitimate interest is insufficient.",
+      "detail_level": "quick"
+    },
+    {
+      "id": "72h_breach_notification",
+      "severity": "high",
+      "article": "33",
+      "description": "72-hour breach notification to supervisory authority runs from 'becoming aware' of the breach, not from the breach itself. Awareness test is nuanced — controller must have reasonable degree of certainty.",
+      "detail_level": "quick"
+    }
+  ],
+
+  "cross_regulation": [
+    {
+      "regulation": "DORA",
+      "relationship": "stacking",
+      "key_provisions": ["DORA Art. 30"],
+      "note": "GDPR Art. 28 processor agreements stack with DORA Art. 30 ICT contract provisions for financial entities."
+    },
+    {
+      "regulation": "NIS2",
+      "relationship": "stacking",
+      "key_provisions": ["NIS2 Art. 35"],
+      "note": "NIS2 Art. 35 incident notification to CSIRT is separate from GDPR Art. 33 breach notification to DPA."
+    }
+  ],
+
+  "key_structures": [],
+  "key_recitals": [],
+
+  "national_implementation": {
+    "pattern": "GDPR is directly applicable. Search Law MCPs for national implementing acts (e.g., BDSG in Germany, AVG in Netherlands, DPA 2018 in UK pre-Brexit).",
+    "known_examples": []
+  },
+
+  "evidence_hint": "Call get_evidence_requirements(regulation='GDPR') for per-article audit artifacts.",
+
+  "timeline": [
+    {
+      "event": "GDPR applicable",
+      "date": "2018-05-25",
+      "note": "All GDPR requirements in force"
+    }
+  ],
+
+  "citation_format": "Cite as: GDPR Art. X(Y). For recitals: GDPR Recital N."
+}

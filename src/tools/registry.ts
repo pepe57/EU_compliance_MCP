@@ -23,6 +23,15 @@ import {
   getRecentChanges,
   type GetRecentChangesInput,
 } from './version-tracking.js';
+import { getRegulationGuide, type RegulationGuideInput } from './regulation-guide.js';
+import {
+  searchGuidance,
+  type SearchGuidanceInput,
+  getGuidanceSection,
+  type GetGuidanceSectionInput,
+  listGuidance,
+  type ListGuidanceInput,
+} from './guidance.js';
 
 interface ToolDefinition {
   name: string;
@@ -316,6 +325,36 @@ export const TOOLS: ToolDefinition[] = [
       return await getEvidenceRequirements(db, input);
     },
   },
+  {
+    name: 'get_regulation_guide',
+    description:
+      'Get analysis guidance for a specific regulation. Returns delegated acts, ' +
+      'proportionality tiers, commonly missed provisions, cross-regulation pointers, and ' +
+      'analysis methodology hints. Call this BEFORE analyzing any regulation to discover ' +
+      'what data is available and how to use it effectively.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        regulation: {
+          type: 'string',
+          description: 'Regulation ID (e.g., "DORA", "GDPR", "NIS2", "AI_ACT")',
+        },
+        detail_level: {
+          type: 'string',
+          enum: ['quick', 'full'],
+          description:
+            'Quick (~500 tokens): delegated acts, proportionality, top pitfalls, ' +
+            'cross-regulation. Full (~1500 tokens): adds key article structures, evidence ' +
+            'hints, recitals, national law pointers. Default: quick.',
+        },
+      },
+      required: ['regulation'],
+    },
+    handler: async (_db, args) => {
+      const input = args as unknown as RegulationGuideInput;
+      return getRegulationGuide(input);
+    },
+  },
   // --- Premium tools: version tracking ---
   {
     name: 'get_article_history',
@@ -396,6 +435,93 @@ export const TOOLS: ToolDefinition[] = [
     handler: async (db, args) => {
       const input = args as unknown as GetRecentChangesInput;
       return await getRecentChanges(db, input);
+    },
+  },
+  // --- Guidance document tools (MDCG, EDPB, etc.) ---
+  {
+    name: 'search_guidance',
+    description:
+      'Search across EU guidance documents (MDCG medical device guidance, EDPB data protection guidance, etc.) for sections matching a query. Returns relevant sections with snippets. Use this for non-binding guidance that interprets or supplements EU regulations.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        query: {
+          type: 'string',
+          description: 'Search query (e.g., "cybersecurity risk management", "SaMD classification")',
+        },
+        document_id: {
+          type: 'string',
+          description: 'Optional: filter to a specific document (e.g., "MDCG_2019_16")',
+        },
+        issuing_body: {
+          type: 'string',
+          description: 'Optional: filter by issuing body (e.g., "MDCG", "EDPB")',
+        },
+        related_regulation: {
+          type: 'string',
+          description: 'Optional: filter by related regulation (e.g., "MDR", "IVDR", "GDPR")',
+        },
+        limit: {
+          type: 'number',
+          description: 'Maximum results to return (default: 15)',
+        },
+      },
+      required: ['query'],
+    },
+    handler: async (db, args) => {
+      const input = args as unknown as SearchGuidanceInput;
+      return await searchGuidance(db, input);
+    },
+  },
+  {
+    name: 'get_guidance_section',
+    description:
+      'Retrieve the full text of a specific section from a guidance document. Use after search_guidance to get the complete section content.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        document_id: {
+          type: 'string',
+          description: 'Guidance document ID (e.g., "MDCG_2019_16")',
+        },
+        section_number: {
+          type: 'string',
+          description: 'Section number (e.g., "3", "3.1")',
+        },
+      },
+      required: ['document_id', 'section_number'],
+    },
+    handler: async (db, args) => {
+      const input = args as unknown as GetGuidanceSectionInput;
+      const section = await getGuidanceSection(db, input);
+      if (!section) {
+        throw new Error(
+          `Section ${input.section_number} not found in document ${input.document_id}`,
+        );
+      }
+      return section;
+    },
+  },
+  {
+    name: 'list_guidance',
+    description:
+      'List available guidance documents, optionally filtered by issuing body or related regulation. Shows document titles, references, dates, and section counts.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        issuing_body: {
+          type: 'string',
+          description: 'Optional: filter by issuing body (e.g., "MDCG", "EDPB")',
+        },
+        related_regulation: {
+          type: 'string',
+          description: 'Optional: filter by related regulation (e.g., "MDR", "IVDR")',
+        },
+      },
+    },
+    handler: async (db, args) => {
+      const input = (args ?? {}) as unknown as ListGuidanceInput;
+      return await listGuidance(db, input);
     },
   },
 ];
