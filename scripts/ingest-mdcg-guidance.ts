@@ -83,9 +83,15 @@ function parseSections(text: string, docId: string): ParsedSection[] {
     const trimmed = line.trim();
     if (!trimmed) continue;
 
-    // Match section number patterns: "1.", "1.1", "3.2.1"
+    // Match section heading patterns:
+    //   "1. Purpose"  "1.1 Scope"  "3.2.1 Risk Assessment"
+    //   "1) Introduction"  "2) Scope"
+    //   "2.2 Conformity assessment" (space-only, multi-level numbers)
+    // Exclude footnote numbers: require period/paren OR multi-level number OR title starts uppercase
     const sectionMatch = trimmed.match(
-      /^(\d+(?:\.\d+)*)\s+(.{3,})/,
+      /^(\d+(?:\.\d+)+)\s+(.{3,})/, // Multi-level numbers like 2.2, 3.1.1 (always a section heading)
+    ) || trimmed.match(
+      /^(\d+)[\.\)]\s+([A-Z].{2,})/, // Single numbers with period/paren: "1. Purpose", "2) Scope"
     );
 
     if (sectionMatch) {
