@@ -307,7 +307,21 @@ async function main() {
       });
 
       // Parse and insert sections
-      const sections = parseSections(fullText, doc.id);
+      let sections = parseSections(fullText, doc.id);
+
+      // Fallback: if no numbered sections found, store the entire document
+      // as a single section so the content is still FTS5-searchable
+      if (sections.length === 0 && fullText.trim().length > 50) {
+        sections = [
+          {
+            id: `${doc.id}_full`,
+            sectionNumber: '0',
+            title: doc.title || doc.reference,
+            content: fullText.trim(),
+            parentSection: null,
+          },
+        ];
+      }
 
       const insertMany = db.transaction((secs: ParsedSection[]) => {
         for (const sec of secs) {
@@ -324,8 +338,9 @@ async function main() {
 
       totalSections += sections.length;
       successCount++;
+      const fallback = sections.length === 1 && sections[0].sectionNumber === '0' ? ' [full-doc fallback]' : '';
       console.log(
-        `  -> ${sections.length} sections (${numPages} pages, ${(pdfBuffer.length / 1024).toFixed(0)} KB)`,
+        `  -> ${sections.length} sections (${numPages} pages, ${(pdfBuffer.length / 1024).toFixed(0)} KB)${fallback}`,
       );
     } catch (err) {
       failCount++;
