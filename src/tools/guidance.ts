@@ -1,4 +1,5 @@
 import type { DatabaseAdapter } from '../database/types.js';
+import { escapeFts5Query } from './fts-utils.js';
 
 export interface SearchGuidanceInput {
   query: string;
@@ -54,27 +55,6 @@ export interface GuidanceDocumentSummary {
   date_revised: string | null;
   status: string;
   section_count: number;
-}
-
-/**
- * Escape special FTS5 query characters (same logic as search.ts).
- */
-function escapeFts5Query(query: string): string {
-  const stopwords = new Set([
-    'a', 'an', 'the', 'and', 'or', 'but', 'in', 'on', 'at',
-    'to', 'for', 'of', 'with', 'by',
-  ]);
-
-  const words = query
-    .replace(/[*+^():.§/|;=~!@#$%&\\{}[\],<>]/g, '')
-    .replace(/['"]/g, '')
-    .replace(/-/g, ' ')
-    .split(/\s+/)
-    .filter((word) => word.length > 2 && !stopwords.has(word.toLowerCase()));
-
-  if (words.length === 0) return '';
-  if (words.length <= 3) return words.join(' ');
-  return words.map((word) => `${word}*`).join(' OR ');
 }
 
 export async function searchGuidance(

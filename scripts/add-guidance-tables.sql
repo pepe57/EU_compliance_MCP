@@ -32,7 +32,8 @@ CREATE VIRTUAL TABLE IF NOT EXISTS guidance_sections_fts USING fts5(
   title,
   content,
   content='guidance_sections',
-  content_rowid='rowid'
+  content_rowid='rowid',
+  tokenize='porter unicode61'
 );
 
 CREATE TRIGGER IF NOT EXISTS guidance_sections_ai AFTER INSERT ON guidance_sections BEGIN
@@ -51,3 +52,5 @@ CREATE TRIGGER IF NOT EXISTS guidance_sections_au AFTER UPDATE ON guidance_secti
   INSERT INTO guidance_sections_fts(rowid, document_id, section_number, title, content)
   VALUES (new.rowid, new.document_id, new.section_number, new.title, new.content);
 END;
+
+CREATE INDEX IF NOT EXISTS idx_gd_date ON guidance_documents(date_published DESC);
