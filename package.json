@@ -108,7 +108,9 @@
     "@ansvar/mcp-sqlite": "^1.0.3",
     "@modelcontextprotocol/sdk": "^1.26.0",
     "ajv": "^8.18.0",
+    "cheerio": "^1.2.0",
     "jsdom": "^27.4.0",
+    "pdfjs-dist": "^5.5.207",
     "pg": "^8.13.2"
   }
 }
