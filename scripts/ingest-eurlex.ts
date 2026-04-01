@@ -74,6 +74,12 @@ const REGULATION_METADATA: Record<string, { id: string; full_name: string; effec
   '52023PC0366': { id: 'PSD3', full_name: 'Payment Services Directive 3 (Proposed)' },
   '52023PC0367': { id: 'PSR', full_name: 'Payment Services Regulation (Proposed)' },
   '52023PC0360': { id: 'FIDA', full_name: 'Financial Data Access Regulation (Proposed)' },
+  // Pharmaceutical / Life Sciences regulations
+  '32014R0536': { id: 'CTR', full_name: 'Clinical Trials Regulation', effective_date: '2022-01-31' },
+  '32001L0083': { id: 'MEDICINAL_PRODUCTS_DIR', full_name: 'Directive on the Community code relating to medicinal products for human use', effective_date: '2001-11-28' },
+  '02001L0083-20220101': { id: 'MEDICINAL_PRODUCTS_DIR', full_name: 'Directive on the Community code relating to medicinal products for human use', effective_date: '2001-11-28' },
+  '32004R0726': { id: 'CENTRALISED_PROCEDURE_REG', full_name: 'Regulation laying down Community procedures for the authorisation and supervision of medicinal products', effective_date: '2004-04-30' },
+  '02004R0726-20190128': { id: 'CENTRALISED_PROCEDURE_REG', full_name: 'Regulation laying down Community procedures for the authorisation and supervision of medicinal products', effective_date: '2004-04-30' },
 };
 
 async function fetchEurLexHtml(celexId: string, useBrowser = false): Promise<string> {

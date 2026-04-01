@@ -42,7 +42,7 @@ export const REGULATION_CATEGORIES: Record<string, string[]> = {
     'PSD3', 'PSR', 'FIDA'],
   ai_and_technology: ['AI_ACT', 'CHIPS_ACT'],
   product_safety: ['CRA', 'GPSR', 'MACHINERY', 'RED', 'PLD'],
-  healthcare: ['MDR', 'IVDR', 'EHDS'],
+  healthcare: ['MDR', 'IVDR', 'EHDS', 'CTR', 'MEDICINAL_PRODUCTS_DIR', 'CENTRALISED_PROCEDURE_REG'],
   sustainability: ['CSRD', 'CSDDD', 'EU_TAXONOMY', 'SFDR', 'CBAM', 'EUDR', 'CRMA'],
   critical_infrastructure: ['CER', 'NIS2'],
   automotive: ['UN_R155', 'UN_R156'],
